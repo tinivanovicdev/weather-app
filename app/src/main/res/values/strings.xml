@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WeatherApp</string>
+    <string name="location_not_found">Location not found</string>
+    <string name="check_your_internet_connection">Check your internet connection.</string>
+    <string name="error_general">Something went wrong.</string>
+    <string name="search_instructions">Enter a city in the search bar, then click either the search icon or the keyboard search icon to retrieve the desired results.</string>
+</resources>
