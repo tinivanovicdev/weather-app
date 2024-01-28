@@ -2,8 +2,10 @@ package com.ivanovictin.weatherapp.features.home.ui
 
 import android.widget.Toast
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -35,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -43,6 +47,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.ivanovictin.weatherapp.R
 import com.ivanovictin.weatherapp.common.ui.FullScreenLoader
+import com.ivanovictin.weatherapp.common.ui.SearchInputField
 import com.ivanovictin.weatherapp.designsystem.LocalDimens
 import com.ivanovictin.weatherapp.designsystem.WeatherAppTheme
 import com.ivanovictin.weatherapp.features.home.ui.model.UiWeather
@@ -82,7 +87,6 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeContent(
     uiState: HomeUiState,
@@ -90,21 +94,24 @@ private fun HomeContent(
     onQuerySubmitted: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SearchBar(
-        modifier = modifier.fillMaxWidth(),
-        query = uiState.query,
-        onQueryChange = onQueryChanged,
-        onSearch = { onQuerySubmitted() },
-        active = true,
-        trailingIcon = {
-            Icon(
-                modifier = Modifier.clickable { onQuerySubmitted() },
-                imageVector = Icons.Outlined.Search,
-                contentDescription = ""
-            )
-        },
-        onActiveChange = {}
-    ) {
+    Column(modifier = modifier) {
+        SearchInputField(
+            modifier = modifier
+                .fillMaxWidth()
+                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.primary)),
+            query = uiState.query,
+            onQueryChange = onQueryChanged,
+            onSearch = { onQuerySubmitted() },
+            active = true,
+            trailingIcon = {
+                Icon(
+                    modifier = Modifier.clickable { onQuerySubmitted() },
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = ""
+                )
+            },
+            onActiveChange = {},
+        )
         WeatherContent(weatherResult = uiState.uiWeather, isLoading = uiState.isLoading)
     }
 }
