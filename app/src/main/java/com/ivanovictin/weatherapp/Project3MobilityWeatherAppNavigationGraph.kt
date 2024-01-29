@@ -6,15 +6,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.ivanovictin.weatherapp.features.home.ui.HomeRoute
 import com.ivanovictin.weatherapp.features.home.ui.homeScreen
+import com.ivanovictin.weatherapp.features.search.ui.SearchRoute
+import com.ivanovictin.weatherapp.features.search.ui.searchScreen
 
 @Composable
 fun Project3MobilityWeatherAppNavigationGraph(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = HomeRoute,
+        startDestination = SearchRoute,
         modifier = modifier,
     ) {
         homeScreen()
+        searchScreen()
     }
 }

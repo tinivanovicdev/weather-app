@@ -2,11 +2,8 @@ package com.ivanovictin.weatherapp.features.home.ui
 
 import android.widget.Toast
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,12 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +22,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -38,7 +29,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -47,7 +37,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.ivanovictin.weatherapp.R
 import com.ivanovictin.weatherapp.common.ui.FullScreenLoader
-import com.ivanovictin.weatherapp.common.ui.SearchInputField
 import com.ivanovictin.weatherapp.designsystem.LocalDimens
 import com.ivanovictin.weatherapp.designsystem.WeatherAppTheme
 import com.ivanovictin.weatherapp.features.home.ui.model.UiWeather
@@ -57,7 +46,9 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
     val state = viewModel.uiState.collectAsStateWithLifecycle()
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -95,23 +86,6 @@ private fun HomeContent(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        SearchInputField(
-            modifier = modifier
-                .fillMaxWidth()
-                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.primary)),
-            query = uiState.query,
-            onQueryChange = onQueryChanged,
-            onSearch = { onQuerySubmitted() },
-            active = true,
-            trailingIcon = {
-                Icon(
-                    modifier = Modifier.clickable { onQuerySubmitted() },
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = ""
-                )
-            },
-            onActiveChange = {},
-        )
         WeatherContent(weatherResult = uiState.uiWeather, isLoading = uiState.isLoading)
     }
 }
@@ -176,6 +150,7 @@ private fun WeatherContent(
                 text = weatherResult.currentTemperatureInCelsius,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Black)
             )
+
             WeatherData(
                 modifier = Modifier
                     .fillMaxWidth()
