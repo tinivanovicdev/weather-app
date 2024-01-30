@@ -2,15 +2,20 @@ package com.ivanovictin.weatherapp.features.search.ui
 
 import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -19,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -29,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivanovictin.weatherapp.R
 import com.ivanovictin.weatherapp.common.ui.SearchInputField
 import com.ivanovictin.weatherapp.designsystem.LocalDimens
+import com.ivanovictin.weatherapp.features.search.ui.model.UIAutocompleteLocation
 
 @Composable
 fun SearchScreen(
@@ -61,7 +68,7 @@ fun SearchContent(
     val screenHeight = remember { localConfiguration.screenHeightDp + 500 }
 
     val offset by animateIntOffsetAsState(
-        targetValue = if (state.isSearching) {
+        targetValue = if (state.wasSearchingInitiated) {
             IntOffset(x = 0, y = 200)
         } else {
             IntOffset(x = 0, y = screenHeight)
@@ -94,9 +101,33 @@ fun SearchContent(
                 onQueryChange = onQueryChanged,
                 onClicked = onTextInputInitiated,
                 placeHolder = stringResource(id = R.string.enter_a_destination),
-                enabled = state.isSearching,
+                enabled = state.wasSearchingInitiated,
                 focusRequester = focusRequester
             )
+            LocationReccomendations(locations = state.locations)
+        }
+    }
+}
+
+@Composable
+private fun LocationReccomendations(
+    locations: List<UIAutocompleteLocation>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier) {
+        items(locations) { location ->
+            Row(
+                modifier = Modifier
+                    .clickable {  }
+                    .fillMaxWidth()
+                    .border(1.dp, Color.Gray)
+                    .background(Color.White.copy(alpha = 0.5f))
+                    .padding(LocalDimens.current.large),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = location.name)
+            }
         }
     }
 }
