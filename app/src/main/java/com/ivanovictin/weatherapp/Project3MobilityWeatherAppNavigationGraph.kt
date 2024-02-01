@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.ivanovictin.weatherapp.common.utils.NavigationUtils.DESTINATION
 import com.ivanovictin.weatherapp.features.home.ui.HomeRoute
 import com.ivanovictin.weatherapp.features.home.ui.homeScreen
 import com.ivanovictin.weatherapp.features.search.ui.SearchRoute
@@ -18,6 +19,9 @@ fun Project3MobilityWeatherAppNavigationGraph(modifier: Modifier = Modifier) {
         modifier = modifier,
     ) {
         homeScreen()
-        searchScreen()
+        searchScreen(onNavigateToWeatherScreen = { destination ->
+            navController.navigate("$HomeRoute?${DESTINATION}=$destination")
+        }
+        )
     }
 }

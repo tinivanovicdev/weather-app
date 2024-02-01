@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -34,14 +35,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivanovictin.weatherapp.R
 import com.ivanovictin.weatherapp.common.ui.SearchInputField
+import com.ivanovictin.weatherapp.common.utils.ObserveEvent
 import com.ivanovictin.weatherapp.designsystem.LocalDimens
 import com.ivanovictin.weatherapp.features.search.ui.model.UIAutocompleteLocation
 
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel(),
+    onNavigateToWeatherScreen: (String) -> Unit,
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle()
+
+    ObserveEvent(
+        eventsFlow = viewModel.eventsFlow,
+        lifecycleOwner = LocalLifecycleOwner.current,
+    ) {
+        when (it) {
+            is SearchEvent.NavigateToDestinationWeather -> onNavigateToWeatherScreen(it.destination)
+        }
+    }
 
     SearchContent(
         state = state.value,
@@ -104,7 +116,10 @@ fun SearchContent(
                 enabled = state.wasSearchingInitiated,
                 focusRequester = focusRequester
             )
-            LocationReccomendations(locations = state.locations)
+            LocationReccomendations(
+                locations = state.locations,
+                onDestinationSelected = onDestinationSelected
+            )
         }
     }
 }
@@ -112,13 +127,16 @@ fun SearchContent(
 @Composable
 private fun LocationReccomendations(
     locations: List<UIAutocompleteLocation>,
+    onDestinationSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier) {
         items(locations) { location ->
             Row(
                 modifier = Modifier
-                    .clickable {  }
+                    .clickable {
+                        onDestinationSelected(location.name)
+                    }
                     .fillMaxWidth()
                     .border(1.dp, Color.Gray)
                     .background(Color.White.copy(alpha = 0.5f))

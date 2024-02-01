@@ -27,7 +27,9 @@ class SearchViewModel @Inject constructor(
     fun onAction(action: SearchAction) {
         when (action) {
             is SearchAction.DestinationSelected -> {
-                // TODO:
+                viewModelScope.launch {
+                    eventsChannel.send(SearchEvent.NavigateToDestinationWeather(action.destination))
+                }
             }
 
             is SearchAction.QueryChanged -> {

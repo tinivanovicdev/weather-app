@@ -3,9 +3,9 @@ package com.ivanovictin.weatherapp.features.search.ui
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-fun NavGraphBuilder.searchScreen() {
+fun NavGraphBuilder.searchScreen(onNavigateToWeatherScreen: (String) -> Unit) {
     composable(SearchRoute) {
-        SearchScreen()
+        SearchScreen(onNavigateToWeatherScreen = onNavigateToWeatherScreen)
     }
 }
 
