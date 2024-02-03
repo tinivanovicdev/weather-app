@@ -13,7 +13,7 @@ data class ForecastDayResponse(
     @SerialName("astro") val astro: AstroResponse,
     @SerialName("date") val date: String,
     @SerialName("date_epoch") val dateEpoch: Int,
-    @SerialName("day") val day: DayResponse,
+    @SerialName("day") val day: DayForecastResponse,
     @SerialName("hour") val hour: List<HourResponse>
 )
 
@@ -23,14 +23,14 @@ data class AstroResponse(
     @SerialName("is_sun_up") val isSunUp: Int,
     @SerialName("moon_illumination") val moonIllumination: Int,
     @SerialName("moon_phase") val moonPhase: String,
-    @SerialName("moonrise") val moonrise: String,
-    @SerialName("moonset") val moonset: String,
-    @SerialName("sunrise") val sunrise: String,
-    @SerialName("sunset") val sunset: String
+    @SerialName("moonrise") val moonriseTime: String,
+    @SerialName("moonset") val moonsetTime: String,
+    @SerialName("sunrise") val sunriseTime: String,
+    @SerialName("sunset") val sunsetTime: String
 )
 
 @Serializable
-data class DayResponse(
+data class DayForecastResponse(
     @SerialName("avghumidity") val avghumidity: Int,
     @SerialName("avgtemp_c") val averageTempInCelsius: Double,
     @SerialName("avgtemp_f") val averageTempInFahrenheit: Double,
