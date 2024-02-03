@@ -11,4 +11,11 @@ interface WeatherApi {
         @Query("q") locationName: String,
         @Query("aqi") airQualityDataFlag: String?,
     ): EitherResult<WeatherResponse>
+
+    @GET("v1/forecast.json")
+    suspend fun getForecast(
+        @Query("q") locationName: String,
+        @Query("days") days: String,
+        @Query("aqi") airQualityDataFlag: String?,
+    ): EitherResult<WeatherResponse>
 }
