@@ -8,6 +8,7 @@ import javax.inject.Inject
 class ForecastToUiForecastMapper @Inject constructor(
     private val astroForecastToUiAstroForcastMapper: AstroForecastToUiAstroForcastMapper,
     private val dayForecastToUiDayForecastMapper: DayForecastToUiDayForecastMapper,
+    private val hourForecastToUiHourForecastMapper: HourForecastToUiHourForecastMapper,
 ) {
     fun map(origin: Forecast): UiForecast {
         return with(origin) {
@@ -16,7 +17,7 @@ class ForecastToUiForecastMapper @Inject constructor(
                 date = date,
                 dateEpoch = dateEpoch,
                 day = dayForecastToUiDayForecastMapper.map(day),
-                hour = listOf()
+                hour = hour.map { hourForecastToUiHourForecastMapper.map(it) }
             )
         }
     }

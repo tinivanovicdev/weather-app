@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +30,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivanovictin.weatherapp.R
 import com.ivanovictin.weatherapp.designsystem.LocalDimens
 import com.ivanovictin.weatherapp.designsystem.WeatherAppTheme
+import com.ivanovictin.weatherapp.features.weather.domain.model.HourForecast
+import com.ivanovictin.weatherapp.features.weather.ui.model.UiHourForecast
 import com.ivanovictin.weatherapp.features.weather.ui.model.UiWeather
 
 @Composable
@@ -59,46 +65,30 @@ private fun WeatherContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxSize(),
+    ) {
+        HourForecast(modifier = Modifier.fillMaxWidth(), list = weatherResult.forecast[0].hour)
+    }
+}
+
+@Composable
+private fun HourForecast(list: List<UiHourForecast>, modifier: Modifier = Modifier) {
+    LazyRow(modifier = modifier.background(Color.Red)) {
+        items(list) {
+            HourForecastItem(item = it)
+        }
+    }
+}
+
+@Composable
+private fun HourForecastItem(item: UiHourForecast, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            modifier = Modifier.padding(
-                start = LocalDimens.current.large,
-                end = LocalDimens.current.large,
-                top = LocalDimens.current.large,
-            ),
-            text = weatherResult.location,
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Text(
-            modifier = Modifier.padding(
-                horizontal = LocalDimens.current.large,
-            ),
-            text = weatherResult.country,
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Image(
-            modifier = Modifier
-                .padding(LocalDimens.current.large),
-            painter = painterResource(id = weatherResult.weatherImage.drawableResId),
-            contentDescription = "",
-        )
-        Text(
-            text = weatherResult.currentTemperatureInCelsius,
-            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Black)
-        )
-
-        WeatherData(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = LocalDimens.current.large,
-                    end = LocalDimens.current.medium,
-                    start = LocalDimens.current.medium
-                ),
-            uiWeather = weatherResult
-        )
+        Text(text = item.condition.orEmpty())
+        Text(text = item.temperatureInCelsius.toString())
     }
 }
 
