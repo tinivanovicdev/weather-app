@@ -9,13 +9,15 @@ import javax.inject.Inject
 class GetCurrentWeatherUseCase @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val booleanToShowAirQualityStringMapper: BooleanToShowAirQualityStringMapper,
-) : suspend (String, Boolean) -> EitherResult<Weather> {
+) : suspend (String, Int, Boolean) -> EitherResult<Weather> {
     override suspend fun invoke(
         locationName: String,
+        numberOfDays: Int,
         showAirQualityData: Boolean,
     ): EitherResult<Weather> {
-        return weatherRepository.getWeather(
+        return weatherRepository.getWeatherWithForecast(
             location = locationName,
+            numberOfDays = numberOfDays,
             getAirQuality = booleanToShowAirQualityStringMapper.map(showAirQualityData),
         )
     }

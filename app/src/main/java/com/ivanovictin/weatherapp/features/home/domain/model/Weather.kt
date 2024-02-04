@@ -12,4 +12,5 @@ data class Weather(
     val windDirection: String?,
     val humidity: String,
     val weatherImageCode: Int?,
+    val forecast: List<Forecast>,
 )

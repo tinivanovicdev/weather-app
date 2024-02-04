@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ForecastResponse(
-    @SerialName("text") val forecastDayResponse: List<ForecastDayResponse>
+    @SerialName("forecastday") val forecastDayResponse: List<ForecastDayResponse>
 )
 
 @Serializable
@@ -14,7 +14,7 @@ data class ForecastDayResponse(
     @SerialName("date") val date: String,
     @SerialName("date_epoch") val dateEpoch: Int,
     @SerialName("day") val day: DayForecastResponse,
-    @SerialName("hour") val hour: List<HourResponse>
+    @SerialName("hour") val hour: List<HourForecastResponse>
 )
 
 @Serializable
@@ -54,7 +54,7 @@ data class DayForecastResponse(
 )
 
 @Serializable
-data class HourResponse(
+data class HourForecastResponse(
     @SerialName("chance_of_rain") val chanceOfRainPercentage: Int,
     @SerialName("chance_of_snow") val chanceOfSnowPercentage: Int,
     @SerialName("cloud") val cloud: Int,

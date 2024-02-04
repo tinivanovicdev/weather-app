@@ -5,7 +5,8 @@ import com.ivanovictin.weatherapp.features.home.domain.model.Weather
 import javax.inject.Inject
 
 class WeatherResponseToWeatherMapper @Inject constructor(
-    private val isDayIntMapperToBooleanMapper: IsDayIntMapperToBooleanMapper,
+    private val intToBooleanMapper: IntToBooleanMapper,
+    private val forecastResponseToForecastMapper: ForecastDayResponseToForecastMapper,
 ) {
     fun map(origin: WeatherResponse): Weather {
         return with(origin) {
@@ -18,9 +19,12 @@ class WeatherResponseToWeatherMapper @Inject constructor(
                 cloudPercentage = currentWeather.cloudPercentage,
                 pressureInMillibars = currentWeather.pressureInMillibars,
                 windDirection = currentWeather.windDirection,
-                isDay = isDayIntMapperToBooleanMapper.map(currentWeather.isDay),
+                isDay = intToBooleanMapper.map(currentWeather.isDay),
                 humidity = currentWeather.humidityPercentage.toString(),
-                weatherImageCode = currentWeather.weatherCondition?.code
+                weatherImageCode = currentWeather.weatherCondition?.code,
+                forecast = forecastResponse.forecastDayResponse.map {
+                    forecastResponseToForecastMapper.map(it)
+                }
             )
         }
     }

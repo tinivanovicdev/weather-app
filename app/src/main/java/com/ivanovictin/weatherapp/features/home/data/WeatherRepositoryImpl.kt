@@ -11,12 +11,14 @@ class WeatherRepositoryImpl @Inject constructor(
     private val weatherApi: WeatherApi,
     private val weatherResponseToWeatherMapper: WeatherResponseToWeatherMapper,
 ) : WeatherRepository {
-    override suspend fun getWeather(
-        locationName: String,
+    override suspend fun getWeatherWithForecast(
+        location: String,
+        numberOfDays: Int,
         getAirQuality: String,
     ): EitherResult<Weather> {
-        return weatherApi.getCurrentWeather(
-            locationName = locationName,
+        return weatherApi.getWeatherWithForecast(
+            locationName = location,
+            days = numberOfDays,
             airQualityDataFlag = getAirQuality
         ).map { weatherResponse ->
             weatherResponseToWeatherMapper.map(weatherResponse)

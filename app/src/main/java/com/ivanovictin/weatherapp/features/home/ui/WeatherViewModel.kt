@@ -32,6 +32,7 @@ class WeatherViewModel @Inject constructor(
             uiState.update { it.copy(isLoading = true) }
             getCurrentWeatherUseCase.invoke(
                 locationName = savedStateHandle.get<String>(DESTINATION) ?: "",
+                numberOfDays = 7,
                 showAirQualityData = false,
             ).either(::handleFailure) { weather ->
                 val uiWeather = weatherToUiWeatherMapper.map(weather)
