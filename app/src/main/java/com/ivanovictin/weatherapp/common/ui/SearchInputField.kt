@@ -17,17 +17,13 @@ import androidx.compose.ui.semantics.semantics
 fun SearchInputField(
     query: String,
     onQueryChange: (String) -> Unit,
-    onClicked: () -> Unit,
     placeHolder: String,
     enabled: Boolean,
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester,
 ) {
-    modifier.focusRequester(focusRequester = focusRequester)
     TextField(
-        modifier = modifier.clickable {
-            onClicked()
-        },
+        modifier = modifier.focusRequester(focusRequester),
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,

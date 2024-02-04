@@ -29,12 +29,19 @@ class SearchViewModel @Inject constructor(
             is SearchAction.DestinationSelected -> {
                 viewModelScope.launch {
                     eventsChannel.send(SearchEvent.NavigateToDestinationWeather(action.destination))
+                    uiState.update {
+                        it.copy(
+                            query = "",
+                            isSearching = false,
+                            locations = emptyList()
+                        )
+                    }
                 }
             }
 
             is SearchAction.QueryChanged -> {
                 viewModelScope.launch {
-                    uiState.update { it.copy(query = action.query, wasSearchingInitiated = true) }
+                    uiState.update { it.copy(query = action.query) }
                     getAutocompleteHintsUseCase.invoke(action.query).either(::handleFailure) {
                         val locations = mapper.map(it)
                         uiState.update { it.copy(locations = locations) }
@@ -43,7 +50,7 @@ class SearchViewModel @Inject constructor(
             }
 
             is SearchAction.SearchTapped -> {
-                uiState.update { it.copy(wasSearchingInitiated = true) }
+                uiState.update { it.copy(isSearching = true) }
             }
         }
     }

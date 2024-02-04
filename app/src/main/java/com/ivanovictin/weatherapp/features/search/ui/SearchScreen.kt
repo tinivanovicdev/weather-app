@@ -1,13 +1,14 @@
 package com.ivanovictin.weatherapp.features.search.ui
 
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -75,68 +75,9 @@ fun SearchScreen(
         onDestinationSelected = {
             viewModel.onAction(SearchAction.DestinationSelected(it))
         },
-        onTextInputInitiated = {
+        onSearchIconClicked = {
             viewModel.onAction(SearchAction.SearchTapped)
         })
-}
-
-@Composable
-fun SearchContent(
-    state: SearchUiState,
-    onQueryChanged: (String) -> Unit,
-    onDestinationSelected: (String) -> Unit,
-    onTextInputInitiated: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val localConfiguration = LocalConfiguration.current
-    val screenHeight = remember { localConfiguration.screenHeightDp + 500 }
-
-    val offset by animateIntOffsetAsState(
-        animationSpec = tween(),
-        targetValue = if (state.wasSearchingInitiated) {
-            IntOffset(x = 0, y = 200)
-        } else {
-            IntOffset(x = 0, y = screenHeight)
-        }, label = "offset"
-    )
-
-    val focusRequester = remember { FocusRequester() }
-
-    /*Column(
-        modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.background,
-                    ),
-                    tileMode = TileMode.Decal
-                )
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Column(modifier = Modifier.offset { offset }) {
-            SearchInputField(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(LocalDimens.current.medium)
-                    .clip(CircleShape),
-                query = state.query,
-                onQueryChange = onQueryChanged,
-                onClicked = onTextInputInitiated,
-                placeHolder = stringResource(id = R.string.enter_a_destination),
-                enabled = state.wasSearchingInitiated,
-                focusRequester = focusRequester
-            )
-            LocationReccomendations(
-                locations = state.locations,
-                onDestinationSelected = onDestinationSelected
-            )
-        }
-    }*/
-
-    SearchAnimation()
 }
 
 @Composable
@@ -166,29 +107,61 @@ private fun LocationReccomendations(
 }
 
 @Composable
-fun SearchAnimation() {
+fun SearchContent(
+    state: SearchUiState,
+    onSearchIconClicked: () -> Unit,
+    onDestinationSelected: (String) -> Unit,
+    onQueryChanged: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val localConfiguration = LocalConfiguration.current
     val screenHeight = remember { localConfiguration.screenHeightDp }
     val screenWidth = remember { localConfiguration.screenWidthDp }
     val focusRequester = remember { FocusRequester() }
 
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.background,
+                    ),
+                    tileMode = TileMode.Decal
+                )
+            )
+    ) {
+        AnimatedSearchInputField(
+            state = state,
+            screenWidth = screenWidth,
+            isSearching = state.isSearching,
+            onDestinationSelected = onDestinationSelected,
+            onQueryChanged = onQueryChanged,
+            focusRequester = focusRequester,
+        )
 
-    val isSearching = remember {
-        mutableStateOf(false)
-    }
-
-    var animationYOffset by remember {
-        mutableFloatStateOf(
-            (screenHeight).toFloat() - 60
+        AnimatedSearchIcon(
+            screenHeight = screenHeight,
+            screenWidth = screenWidth,
+            isSearching = state.isSearching,
+            onSearchIconClicked = onSearchIconClicked,
         )
     }
+}
 
-    var searchInputOpacity by remember {
-        mutableFloatStateOf(0f)
-    }
-
-    var searchInputWidth by remember {
-        mutableFloatStateOf(0f)
+@Composable
+private fun AnimatedSearchIcon(
+    screenHeight: Int,
+    screenWidth: Int,
+    isSearching: Boolean,
+    onSearchIconClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var animationYOffset by remember {
+        mutableFloatStateOf(
+            (screenHeight).toFloat() / 2 - 60
+        )
     }
 
     var animationXOffset by remember {
@@ -201,7 +174,8 @@ fun SearchAnimation() {
         mutableStateOf(120.dp)
     }
 
-    LaunchedEffect(isSearching.value) {
+    LaunchedEffect(isSearching) {
+        if (!isSearching) return@LaunchedEffect
         coroutineScope {
             launch {
                 animate(
@@ -231,7 +205,6 @@ fun SearchAnimation() {
                     animationXOffset = value
                 }
             }
-
             delay(800)
             launch {
                 animate(
@@ -242,7 +215,46 @@ fun SearchAnimation() {
                     animationXOffset = value
                 }
             }
+        }
+    }
 
+    Icon(
+        modifier = modifier
+            .offset(x = animationXOffset.dp, y = animationYOffset.dp)
+            .size(size)
+            .clickable {
+                if (!isSearching) {
+                    onSearchIconClicked()
+                }
+            },
+        imageVector = Icons.Default.Search,
+        tint = MaterialTheme.colorScheme.primary,
+        contentDescription = ""
+    )
+}
+
+@Composable
+private fun BoxScope.AnimatedSearchInputField(
+    state: SearchUiState,
+    screenWidth: Int,
+    isSearching: Boolean,
+    focusRequester: FocusRequester,
+    onQueryChanged: (String) -> Unit,
+    onDestinationSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var searchInputOpacity by remember {
+        mutableFloatStateOf(0f)
+    }
+
+    var searchInputWidth by remember {
+        mutableFloatStateOf(0f)
+    }
+
+    LaunchedEffect(isSearching) {
+        if (!isSearching) return@LaunchedEffect
+        coroutineScope {
+            delay(800)
             launch {
                 animate(
                     initialValue = 0f,
@@ -266,44 +278,23 @@ fun SearchAnimation() {
 
         }
     }
+    SearchInputField(
+        modifier = modifier
+            .align(Alignment.TopCenter)
+            .width(searchInputWidth.dp)
+            .focusRequester(focusRequester)
+            .alpha(searchInputOpacity),
+        query = state.query,
+        onQueryChange = { onQueryChanged(it) },
+        placeHolder = "",
+        enabled = true,
+        focusRequester = focusRequester
+    )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.background,
-                    ),
-                    tileMode = TileMode.Decal
-                )
-            )
-    ) {
-        SearchInputField(
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .width(searchInputWidth.dp)
-                .align(Alignment.TopCenter)
-                .alpha(searchInputOpacity),
-            query = "",
-            onQueryChange = {},
-            onClicked = { },
-            placeHolder = "",
-            enabled = true,
-            focusRequester = focusRequester
-        )
+    LocationReccomendations(
+        modifier = Modifier.padding(top = 56.dp),
+        locations = state.locations,
+        onDestinationSelected = onDestinationSelected
+    )
 
-        Icon(
-            modifier = Modifier
-                .offset(x = animationXOffset.dp, y = animationYOffset.dp)
-                .size(size)
-                .clickable {
-                    isSearching.value = !isSearching.value
-                },
-            imageVector = Icons.Default.Search,
-            tint = Color(0xFF87CEEB),
-            contentDescription = ""
-        )
-    }
 }
