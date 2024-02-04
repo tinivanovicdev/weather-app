@@ -1,0 +1,60 @@
+package com.ivanovictin.weatherapp.features.weather.ui.model
+
+import com.ivanovictin.weatherapp.R
+
+enum class WeatherImage(val code: Int, val drawableResId: Int) {
+    SUNNY(code = 1000, drawableResId = R.drawable.ic_sunny),
+    PARTLY_CLOUDY(code = 1003, drawableResId = R.drawable.ic_cloudy),
+    CLOUDY(code = 1006, drawableResId = R.drawable.ic_cloudy),
+    OVERCAST(code = 1009, drawableResId = R.drawable.ic_cloudy),
+    MIST(code = 1030, drawableResId = R.drawable.ic_cloudy),
+    PATCHY_RAIN_POSSIBLE(code = 1063, drawableResId = R.drawable.ic_rain),
+    PATCHY_SNOW_POSSIBLE(code = 1066, drawableResId = R.drawable.ic_snow),
+    PATCHY_SLEET_POSSIBLE(code = 1069, drawableResId = R.drawable.ic_rain),
+    PATCHY_FREEZING_DRIZZLE_POSSIBLE(code = 1072, drawableResId = R.drawable.ic_snow),
+    THUNDERY_OUTBREAKS_POSSIBLE(code = 1087, drawableResId = R.drawable.ic_lightning_and_rain),
+    BLOWING_SNOW(code = 1114, drawableResId = R.drawable.ic_snow),
+    BLIZZARD(code = 1117, drawableResId = R.drawable.ic_snow),
+    FOG(code = 1135, drawableResId = R.drawable.ic_cloudy),
+    FREEZING_FOG(code = 1147, drawableResId = R.drawable.ic_cloudy),
+    PATCHY_LIGHT_DRIZZLE(code = 1150, drawableResId = R.drawable.ic_hail),
+    LIGHT_DRIZZLE(code = 1153, drawableResId = R.drawable.ic_hail),
+    FREEZING_DRIZZLE(code = 1168, drawableResId = R.drawable.ic_hail),
+    HEAVY_FREEZING_DRIZZLE(code = 1171, drawableResId = R.drawable.ic_hail),
+    PATCHY_LIGHT_RAIN(code = 1180, drawableResId = R.drawable.ic_rain),
+    LIGHT_RAIN(code = 1183, drawableResId = R.drawable.ic_rain),
+    MODERATE_RAIN_AT_TIMES(code = 1186, drawableResId = R.drawable.ic_rain),
+    MODERATE_RAIN(code = 1189, drawableResId = R.drawable.ic_rain),
+    HEAVY_RAIN_AT_TIMES(code = 1192, drawableResId = R.drawable.ic_rain),
+    HEAVY_RAIN(code = 1195, drawableResId = R.drawable.ic_rain),
+    LIGHT_FREEZING_RAIN(code = 1198, drawableResId = R.drawable.ic_hail),
+    MODERATE_OR_HEAVY_FREEZING_RAIN(code = 1201, drawableResId = R.drawable.ic_hail),
+    LIGHT_SLEET(code = 1204, drawableResId = R.drawable.ic_hail),
+    MODERATE_OR_HEAVY_SLEET(code = 1207, drawableResId = R.drawable.ic_hail),
+    PATCHY_LIGHT_SNOW(code = 1210, drawableResId = R.drawable.ic_snow),
+    LIGHT_SNOW(code = 1213, drawableResId = R.drawable.ic_snow),
+    PATCHY_MODERATE_SNOW(code = 1216, drawableResId = R.drawable.ic_snow),
+    MODERATE_SNOW(code = 1219, drawableResId = R.drawable.ic_snow),
+    PATCHY_HEAVY_SNOW(code = 1222, drawableResId = R.drawable.ic_snow),
+    HEAVY_SNOW(code = 1225, drawableResId = R.drawable.ic_snow),
+    ICE_PELLETS(code = 1237, drawableResId = R.drawable.ic_hail),
+    LIGHT_RAIN_SHOWER(code = 1240, drawableResId = R.drawable.ic_rain),
+    MODERATE_OR_HEAVY_RAIN_SHOWER(code = 1243, drawableResId = R.drawable.ic_rain),
+    TORRENTIAL_RAIN_SHOWER(code = 1246, drawableResId = R.drawable.ic_rain),
+    LIGHT_SLEET_SHOWERS(code = 1249, drawableResId = R.drawable.ic_rain),
+    MODERATE_OR_HEAVY_SLEET_SHOWERS(code = 1252, drawableResId = R.drawable.ic_rain),
+    LIGHT_SNOW_SHOWERS(code = 1255, drawableResId = R.drawable.ic_snow),
+    MODERATE_OR_HEAVY_SNOW_SHOWERS(code = 1258, drawableResId = R.drawable.ic_snow),
+    LIGHT_SHOWERS_OF_ICE_PELLETS(code = 1261, drawableResId = R.drawable.ic_hail),
+    MODERATE_OR_HEAVY_SHOWERS_OF_ICE_PELLETS(code = 1264, drawableResId = R.drawable.ic_hail),
+    PATCHY_LIGHT_RAIN_WITH_THUNDER(code = 1273, drawableResId = R.drawable.ic_lightning_and_rain),
+    MODERATE_OR_HEAVY_RAIN_WITH_THUNDER(code = 1276, drawableResId = R.drawable.ic_lightning_and_rain),
+    PATCHY_LIGHT_SNOW_WITH_THUNDER(code = 1279, drawableResId = R.drawable.ic_snow),
+    MODERATE_OR_HEAVY_SNOW_WITH_THUNDER(code = 1282, drawableResId = R.drawable.ic_snow),
+    UNKNOWN(code = 0, drawableResId = R.drawable.ic_not_available),
+    ;
+
+    companion object {
+        fun fromCode(code: Int?): WeatherImage = values().find { it.code == code } ?: UNKNOWN
+    }
+}

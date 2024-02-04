@@ -2,10 +2,10 @@ package com.ivanovictin.weatherapp.domain
 
 import com.ivanovictin.weatherapp.common.network.model.Either
 import com.ivanovictin.weatherapp.common.network.model.Failure
-import com.ivanovictin.weatherapp.features.home.domain.WeatherRepository
-import com.ivanovictin.weatherapp.features.home.domain.mapper.BooleanToShowAirQualityStringMapper
-import com.ivanovictin.weatherapp.features.home.domain.model.Weather
-import com.ivanovictin.weatherapp.features.home.domain.usecase.GetCurrentWeatherUseCase
+import com.ivanovictin.weatherapp.features.weather.domain.WeatherRepository
+import com.ivanovictin.weatherapp.features.weather.domain.mapper.BooleanToShowAirQualityStringMapper
+import com.ivanovictin.weatherapp.features.weather.domain.model.Weather
+import com.ivanovictin.weatherapp.features.weather.domain.usecase.GetCurrentWeatherUseCase
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
