@@ -1,43 +1,55 @@
 package com.ivanovictin.weatherapp.features.search.ui
 
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateIntOffsetAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ivanovictin.weatherapp.R
 import com.ivanovictin.weatherapp.common.ui.SearchInputField
 import com.ivanovictin.weatherapp.common.utils.ObserveEvent
 import com.ivanovictin.weatherapp.designsystem.LocalDimens
 import com.ivanovictin.weatherapp.features.search.ui.model.UIAutocompleteLocation
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(
@@ -80,6 +92,7 @@ fun SearchContent(
     val screenHeight = remember { localConfiguration.screenHeightDp + 500 }
 
     val offset by animateIntOffsetAsState(
+        animationSpec = tween(),
         targetValue = if (state.wasSearchingInitiated) {
             IntOffset(x = 0, y = 200)
         } else {
@@ -89,7 +102,7 @@ fun SearchContent(
 
     val focusRequester = remember { FocusRequester() }
 
-    Column(
+    /*Column(
         modifier
             .fillMaxSize()
             .background(
@@ -121,7 +134,9 @@ fun SearchContent(
                 onDestinationSelected = onDestinationSelected
             )
         }
-    }
+    }*/
+
+    SearchAnimation()
 }
 
 @Composable
@@ -147,5 +162,148 @@ private fun LocationReccomendations(
                 Text(text = location.name)
             }
         }
+    }
+}
+
+@Composable
+fun SearchAnimation() {
+    val localConfiguration = LocalConfiguration.current
+    val screenHeight = remember { localConfiguration.screenHeightDp }
+    val screenWidth = remember { localConfiguration.screenWidthDp }
+    val focusRequester = remember { FocusRequester() }
+
+
+    val isSearching = remember {
+        mutableStateOf(false)
+    }
+
+    var animationYOffset by remember {
+        mutableFloatStateOf(
+            (screenHeight).toFloat() - 60
+        )
+    }
+
+    var searchInputOpacity by remember {
+        mutableFloatStateOf(0f)
+    }
+
+    var searchInputWidth by remember {
+        mutableFloatStateOf(0f)
+    }
+
+    var animationXOffset by remember {
+        mutableFloatStateOf(
+            (screenWidth).toFloat() / 2 - 60
+        )
+    }
+
+    var size by remember {
+        mutableStateOf(120.dp)
+    }
+
+    LaunchedEffect(isSearching.value) {
+        coroutineScope {
+            launch {
+                animate(
+                    initialValue = (screenHeight / 2).toFloat() - 60,
+                    targetValue = 10f,
+                    animationSpec = tween(durationMillis = 800)
+                ) { value: Float, _: Float ->
+                    animationYOffset = value
+                }
+            }
+            launch {
+                animate(
+                    initialValue = 120.dp.value,
+                    targetValue = 40.dp.value,
+                    animationSpec = tween(durationMillis = 800)
+                ) { value: Float, _: Float ->
+                    size = value.dp
+                }
+            }
+
+            launch {
+                animate(
+                    initialValue = (screenWidth).toFloat() / 2 - 60,
+                    targetValue = (screenWidth).toFloat() / 2 - 20,
+                    animationSpec = tween(durationMillis = 800)
+                ) { value: Float, _: Float ->
+                    animationXOffset = value
+                }
+            }
+
+            delay(800)
+            launch {
+                animate(
+                    initialValue = (screenWidth / 2).toFloat() - 20,
+                    targetValue = screenWidth.toFloat() - 40,
+                    animationSpec = tween(durationMillis = 500)
+                ) { value: Float, _: Float ->
+                    animationXOffset = value
+                }
+            }
+
+            launch {
+                animate(
+                    initialValue = 0f,
+                    targetValue = screenWidth.toFloat(),
+                    animationSpec = tween(durationMillis = 500)
+                ) { value: Float, _: Float ->
+                    searchInputWidth = value
+                }
+            }
+            launch {
+                animate(
+                    initialValue = 0f,
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 500)
+                ) { value: Float, _: Float ->
+                    searchInputOpacity = value
+                }
+            }
+            delay(500)
+            focusRequester.requestFocus()
+
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.background,
+                    ),
+                    tileMode = TileMode.Decal
+                )
+            )
+    ) {
+        SearchInputField(
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .width(searchInputWidth.dp)
+                .align(Alignment.TopCenter)
+                .alpha(searchInputOpacity),
+            query = "",
+            onQueryChange = {},
+            onClicked = { },
+            placeHolder = "",
+            enabled = true,
+            focusRequester = focusRequester
+        )
+
+        Icon(
+            modifier = Modifier
+                .offset(x = animationXOffset.dp, y = animationYOffset.dp)
+                .size(size)
+                .clickable {
+                    isSearching.value = !isSearching.value
+                },
+            imageVector = Icons.Default.Search,
+            tint = Color(0xFF87CEEB),
+            contentDescription = ""
+        )
     }
 }
