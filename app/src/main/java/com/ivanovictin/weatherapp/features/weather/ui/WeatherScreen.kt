@@ -3,7 +3,9 @@ package com.ivanovictin.weatherapp.features.weather.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +34,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivanovictin.weatherapp.R
 import com.ivanovictin.weatherapp.designsystem.LocalDimens
 import com.ivanovictin.weatherapp.designsystem.WeatherAppTheme
-import com.ivanovictin.weatherapp.features.weather.domain.model.HourForecast
 import com.ivanovictin.weatherapp.features.weather.ui.model.UiHourForecast
 import com.ivanovictin.weatherapp.features.weather.ui.model.UiWeather
 
@@ -42,38 +45,72 @@ fun HomeScreen(
 
     HomeContent(
         uiState = state.value,
+        onDayClicked = { viewModel.onAction(WeatherAction.DayClicked(it)) }
     )
 }
 
 @Composable
 private fun HomeContent(
     uiState: WeatherUiState,
+    onDayClicked: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (uiState.uiWeather != null) {
         Column(modifier = modifier) {
-            WeatherContent(weatherResult = uiState.uiWeather)
+            WeatherContent(
+                weatherResult = uiState.uiWeather,
+                uiState.selectedDayIndex,
+                onDayClicked = onDayClicked
+            )
         }
     }
-
 }
 
 
 @Composable
 private fun WeatherContent(
     weatherResult: UiWeather,
+    selectedIndex: Int,
+    onDayClicked: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
     ) {
-        HourForecast(modifier = Modifier.fillMaxWidth(), list = weatherResult.forecast[0].hour)
+        DayForecast(weatherResult = weatherResult, onDayClicked = onDayClicked)
+        HourForecast(
+            modifier = Modifier.fillMaxWidth(),
+            list = weatherResult.forecast[selectedIndex].hour
+        )
+    }
+}
+
+@Composable
+private fun DayForecast(weatherResult: UiWeather, onDayClicked: (Int) -> Unit) {
+    LazyRow {
+        itemsIndexed(weatherResult.forecast) { index, weather ->
+            Box(modifier = Modifier
+                .background(Color.Yellow)
+                .clickable {
+                    onDayClicked(index)
+                }) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = weather.day.condition.orEmpty()
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun HourForecast(list: List<UiHourForecast>, modifier: Modifier = Modifier) {
-    LazyRow(modifier = modifier.background(Color.Red)) {
+    LazyRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(
+            LocalDimens.current.large
+        )
+    ) {
         items(list) {
             HourForecastItem(item = it)
         }
@@ -87,8 +124,22 @@ private fun HourForecastItem(item: UiHourForecast, modifier: Modifier = Modifier
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = item.condition.orEmpty())
-        Text(text = item.temperatureInCelsius.toString())
+        Text(
+            modifier = Modifier.padding(LocalDimens.current.medium),
+            text = item.time,
+            style = MaterialTheme.typography.labelLarge
+        )
+
+        Text(
+            modifier = Modifier.padding(LocalDimens.current.medium),
+            text = item.condition.orEmpty(),
+            style = MaterialTheme.typography.labelLarge
+        )
+        Text(
+            modifier = Modifier.padding(LocalDimens.current.medium),
+            text = item.temperatureInCelsius.toString(),
+            style = MaterialTheme.typography.labelMedium
+        )
     }
 }
 

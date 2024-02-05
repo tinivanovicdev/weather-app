@@ -35,16 +35,24 @@ class WeatherViewModel @Inject constructor(
                 numberOfDays = 7,
                 showAirQualityData = false,
             ).either(::handleFailure) { weather ->
-                val uiWeather = weatherToUiWeatherMapper.map(weather)
                 uiState.update {
                     it.copy(
-                        query = uiWeather.location,
                         uiWeather = weatherToUiWeatherMapper.map(weather),
+                        selectedDayIndex = 0,
                         isLoading = false
                     )
                 }
             }
         }
+    }
+
+    fun onAction(action: WeatherAction) {
+        when (action) {
+            is WeatherAction.DayClicked -> {
+                uiState.update { it.copy(selectedDayIndex = action.index) }
+            }
+        }
+
     }
 
     private fun handleFailure(failure: Failure) {
